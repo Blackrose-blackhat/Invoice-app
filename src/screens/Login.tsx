@@ -1,12 +1,13 @@
 
 import React, { useState } from 'react';
-
+import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+
 const Login: React.FC = () => {
-    let navigate = useNavigate();
+    const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-
+    
     const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setUsername(event.target.value);
     };
@@ -17,8 +18,24 @@ const Login: React.FC = () => {
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        console.log(username, password);
-        navigate('/home');
+        // console.log(username, password);
+        
+        // db.get('login').then((doc) => {
+        //     console.log(doc);
+        // });
+        try {
+            if(username === "_onflow" && password === "_onflow123")
+            {
+                toast.success("Login Successful");
+                navigate('/home');
+                
+            }
+            else{
+                toast.error("Wrong Credentials");
+            }
+        } catch (error) {
+           console.log(error.message);
+        }
     };
 
     return (

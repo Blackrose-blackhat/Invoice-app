@@ -25,11 +25,18 @@ import Products from "./screens/Products";
 import Tax from "./screens/Tax";
 import Monthly from "./screens/monthly";
 import Sales from "./screens/sales";
+import "./components/init"
+import Check from "./components/check";
+import { Toaster } from "react-hot-toast";
 const root = createRoot(document.body);
+
 // const navigate = useNavigate();
 root.render(
 <>
+
 <HashRouter>
+  {/* <Check /> */}
+  <div><Toaster/></div>
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/home" element={<Layout />}>
@@ -62,7 +69,8 @@ root.render(
           <Route path='/home/tax' element={<Tax />} />
           <Route path='/home/monthly' element={<Monthly />} />
         </Route>
-      </Routes>
+      </Routes> 
+      {/* <Check /> */}
     </HashRouter>
 </>
 );

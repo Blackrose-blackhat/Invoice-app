@@ -5,3 +5,4 @@ export const getInvoiceById = (id: number) => {
     return invoice || 'Invoice not found';
    
   }
+
