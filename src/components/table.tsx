@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, Navigate , useNavigate } from "react-router-dom";
-
+import "../components/init";
+import PouchDb from "pouchdb-browser";
 
 export const SalesOrderTable = (props: { salesOrders: any }) => {
   const navigate = useNavigate();
@@ -533,7 +534,21 @@ export const PaymentTable = (props: { payment: any }) => {
   );
 };
 
+
 export const ClientTable = (props: { client: any }) => {
+  const [clientData,setClientData] = useState([]);
+  useEffect(() => {
+    const getClients = async () => {
+    const clientDb = new PouchDb("clients");
+    const clients = clientDb.allDocs({include_docs:true});
+    const clientData = (await clients).rows.map(row => row.doc);
+    setClientData(clientData);
+    console.log(clientData);
+    };
+    getClients();
+    
+  }, [])
+  
   const navigate = useNavigate();
   const { client } = props;
   const [selectedOption, setSelectedOption] = useState("5");
@@ -597,9 +612,9 @@ export const ClientTable = (props: { client: any }) => {
           </td>
         </thead>
         <tbody>
-          {client.map(
+          {clientData.map(
             (client: {
-              id: React.Key | null | undefined;
+              _id: React.Key | null | undefined;
               CIID:
                 | string
                 | number
@@ -612,7 +627,7 @@ export const ClientTable = (props: { client: any }) => {
                 | React.ReactPortal
                 | null
                 | undefined;
-              ClientName:
+                clientName:
                 | string
                 | number
                 | boolean
@@ -624,7 +639,7 @@ export const ClientTable = (props: { client: any }) => {
                 | React.ReactPortal
                 | null
                 | undefined;
-              City:
+              city:
                 | string
                 | number
                 | boolean
@@ -636,7 +651,7 @@ export const ClientTable = (props: { client: any }) => {
                 | React.ReactPortal
                 | null
                 | undefined;
-              State:
+              state:
                 | string
                 | number
                 | boolean
@@ -649,23 +664,23 @@ export const ClientTable = (props: { client: any }) => {
                 | null
                 | undefined;
             }) => (
-              <tr key={client.id}>
+              <tr key={client._id}>
                 <td className="p-1 text-sm text-neutral-500 px-2 border border-gray-300">
                   <p className="w-full">{client.CIID}</p>
                 </td>
                 <td className="p-1 uppercase text-sm text-neutral-500 px-2 border border-gray-300">
-                  <p className="w-full">{client.ClientName}</p>
+                  <p className="w-full">{client.clientName}</p>
                 </td>
                 <td className="p-1 text-sm text-neutral-500 px-2 border border-gray-300">
-                  <p className="w-full">{client.City}</p>
+                  <p className="w-full">{client.city}</p>
                 </td>
-                <td className="p-1 text-sm text-neutral-500 px-2 border border-gray-300">
-                  <p className="w-full">{client.State}</p>
+                <td className="capitalize p-1 text-sm text-neutral-500 px-2 border border-gray-300">
+                  <p className="w-full">{client.state}</p>
                 </td>
 
                 <td className="   p-1 text-sm text-neutral-500 px-2 border border-gray-300  ">
                   <div className="flex flex-row items-center gap-2">
-                    <button onClick={() =>navigate("/home/clients:id")} className="uppercase bg-blue-600 text-sm p-1 text-white font-semibold rounded-sm">
+                    <button onClick={() =>navigate(`/home/clients/${client._id}`)} className="uppercase bg-blue-600 text-sm p-1 text-white font-semibold rounded-sm">
                       View
                     </button>
                   </div>

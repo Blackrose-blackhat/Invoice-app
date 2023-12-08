@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const ClientPriceDetails: React.FC = () => {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   // const [invoice, setInvoice] = useState<{ invoice_id: number; InvoiceNumber: string; InvoideDate: string; ShippingAddress: string; Destination: string; } | null>(null);
 
   // const { invoiceId } = useParams();

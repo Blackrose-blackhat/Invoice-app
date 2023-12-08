@@ -1,5 +1,5 @@
 
-import db from '../../db'
+import db from '../db'
 import React from 'react'
 
 const Check = () => {

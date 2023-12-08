@@ -1,4 +1,4 @@
-  import "./src/components/init"
+  import "./components/init"
 import PouchDB from 'pouchdb';
 import PouchDBIdbAdapter from 'pouchdb-adapter-idb';
 

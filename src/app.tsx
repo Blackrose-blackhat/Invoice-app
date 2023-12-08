@@ -50,6 +50,8 @@ root.render(
           <Route path='/home/product/new' element={<NewProd />} />
           <Route path='/home/payment/new' element={<NewVoucher />} />
           <Route path='/home/clients/new' element={<NewClient />} />
+          <Route path='/home/clients/new/:id' element={<NewClient />} />
+
           <Route path='/home/clients/billing/new' element={<NewBilling />} />
           <Route path='/home/clients/price/new' element={<NewClientPrice />} />
           
@@ -64,7 +66,7 @@ root.render(
           <Route path='/home/payment:id' element={<PaymentDetails />} />
 
           <Route path='/home/clients' element={<Clients />} />
-          <Route path='/home/clients:id' element={<ClientDetails />} />
+          <Route path='/home/clients/:id' element={<ClientDetails />} />
 
           <Route path='/home/tax' element={<Tax />} />
           <Route path='/home/monthly' element={<Monthly />} />

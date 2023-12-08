@@ -1,7 +1,78 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-const NewClient = () => {
-    let navigate = useNavigate();
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
+import "../components/init";
+import PouchDB from "pouchdb-browser";
+import toast from "react-hot-toast";
+import { getClientById, getInvoiceById } from "../utils/Actions";
+
+const NewClient = ({ invoiceID }: any) => {
+  
+
+  const db = new PouchDB("clients");
+  const { id } = useParams();
+
+  const navigate = useNavigate();
+
+
+  const [formData, setFormData] = useState({
+    _id: id ? id : uuidv4(),
+    clientID: "",
+    clientName: "",
+    city: "",
+    company: "",
+    phoneNumber: "",
+    website: "",
+    address: "",
+    state: "",
+    zipCode: "",
+    faxArea: "",
+    mailAddress: "",
+  });
+  useEffect(() => {
+    const getClient = async () => {
+      if (id) {
+        const res = getClientById(id);
+        console.log(res);
+        res.then((result) => {
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            ...result,
+          }))
+        });
+      }
+    };
+    getClient();
+  }, [invoiceID]);
+  const handleChange = (e: any) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    // Handle form submission logic here
+    if (id) {
+      await db.put({
+        _id: invoiceID,
+
+        ...formData,
+      });
+      toast.success("Client updated Successfully");
+      navigate("/home/clients");
+    } else {
+      await db.put(formData);
+      navigate("/home/clients");
+      toast.success("Client Added Successfully");
+    }
+  };
+  const handleBack = async (e: any) => {
+    e.preventDefault();
+    navigate("/home/clients");
+  };
+
   return (
     <div className=" w-full h-screen flex flex-col gap-40">
       <div className="flex flex-row justify-between py-10 px-10 ">
@@ -9,14 +80,23 @@ const NewClient = () => {
         <div className="bg-blue-500 rounded-full w-10 h-10" />
       </div>
 
-      <div className="flex flex-col items-center w-full justify-center p-10 lg:px-40 px-10 gap-10">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col items-center w-full justify-center p-10 lg:px-40 px-10 gap-10"
+      >
         <div className="flex flex-row bg-blue-200 justify-between items-center w-full p-2 rounded-md">
           <p className="font-semibold text-blue-400 text-xl">Add new Client</p>
           <div className="flex flex-row items-center gap-5">
-            <button onClick={() => navigate("/home/clients") } className="bg-blue-500 font-semibold p-2 px-3 text-white rounded-sm">
+            <button
+              onClick={handleBack}
+              className="bg-blue-500 font-semibold p-2 px-3 text-white rounded-sm"
+            >
               Back to List
             </button>
-            <button className="bg-green-500 font-semibold p-2 px-3  text-white rounded-sm">
+            <button
+              type="submit"
+              className="bg-green-500 font-semibold p-2 px-3  text-white rounded-sm"
+            >
               Save
             </button>
           </div>
@@ -30,29 +110,54 @@ const NewClient = () => {
                 <p className="text-md font-semibold text-neutral-700">
                   Client Name
                 </p>
-                <input className="border-2 border-gray-300 p-1" />
+                <input
+                  name="clientName"
+                  value={formData.clientName}
+                  onChange={handleChange}
+                  className="border-2 border-gray-300 p-1"
+                />
               </div>
               <div className="flex flex-col ">
                 <p className="text-md font-semibold text-neutral-700">City</p>
-                <input className="border-2 border-gray-300 p-1" />
+                <input
+                  name="city"
+                  value={formData.city}
+                  onChange={handleChange}
+                  className="border-2 border-gray-300 p-1"
+                />
               </div>
               <div className="flex flex-col ">
                 <p className="text-md font-semibold text-neutral-700">
                   Company
                 </p>
-                <input className="border-2 border-gray-300 p-1" />
+                <input
+                  name="company"
+                  value={formData.company}
+                  onChange={handleChange}
+                  className="border-2 border-gray-300 p-1"
+                />
               </div>
               <div className="flex flex-col ">
                 <p className="text-md font-semibold text-neutral-700">
                   Phone Number
                 </p>
-                <input className="border-2 border-gray-300 p-1" />
+                <input
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
+                  className="border-2 border-gray-300 p-1"
+                />
               </div>
               <div className="flex flex-col ">
                 <p className="text-md font-semibold text-neutral-700">
                   Website
                 </p>
-                <input className="border-2 border-gray-300 p-1" />
+                <input
+                  name="website"
+                  value={formData.website}
+                  onChange={handleChange}
+                  className="border-2 border-gray-300 p-1"
+                />
               </div>
             </div>
             <div className="flex flex-col w-1/2 gap-1 ">
@@ -60,34 +165,59 @@ const NewClient = () => {
                 <p className="text-md font-semibold text-neutral-700">
                   Address
                 </p>
-                <textarea className="border-2 border-gray-300 p-1" />
+                <textarea
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  className="border-2 border-gray-300 p-1"
+                />
               </div>
               <div className="flex flex-col  ">
                 <p className="text-md font-semibold text-neutral-700">State</p>
-                <input className="border-2 border-gray-300 p-1" />
+                <input
+                  name="state"
+                  value={formData.state}
+                  onChange={handleChange}
+                  className="border-2 border-gray-300 p-1"
+                />
               </div>
               <div className="flex flex-col  ">
                 <p className="text-md font-semibold text-neutral-700">
                   Zip Code
                 </p>
-                <input className="border-2 border-gray-300 p-1" />
+                <input
+                  name="zipCode"
+                  value={formData.zipCode}
+                  onChange={handleChange}
+                  className="border-2 border-gray-300 p-1"
+                />
               </div>
               <div className="flex flex-col  ">
                 <p className="text-md font-semibold text-neutral-700">
                   Fax Area
                 </p>
-                <input className="border-2 border-gray-300 p-1" />
+                <input
+                  name="faxArea"
+                  value={formData.faxArea}
+                  onChange={handleChange}
+                  className="border-2 border-gray-300 p-1"
+                />
               </div>
               <div className="flex flex-col  ">
                 <p className="text-md font-semibold text-neutral-700">
                   Mail Address
                 </p>
-                <input className="border-2 border-gray-300 p-1" />
+                <input
+                  name="mailAddress"
+                  value={formData.mailAddress}
+                  onChange={handleChange}
+                  className="border-2 border-gray-300 p-1"
+                />
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </form>
     </div>
   );
 };
