@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Link, Navigate , useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import "../components/init";
 import PouchDb from "pouchdb-browser";
+import { getClientById } from "../utils/Actions";
 
 export const SalesOrderTable = (props: { salesOrders: any }) => {
   const navigate = useNavigate();
@@ -115,7 +116,10 @@ export const SalesOrderTable = (props: { salesOrders: any }) => {
                   <p className="w-full">{saleOrder.destination}</p>
                 </td>
                 <td className="p-1">
-                  <button onClick={() => navigate("/home/sales/:id" ) } className="bg-blue-500 text-sm p-1 text-white font-semibold rounded-sm">
+                  <button
+                    onClick={() => navigate("/home/sales/:id")}
+                    className="bg-blue-500 text-sm p-1 text-white font-semibold rounded-sm"
+                  >
                     View
                   </button>
                 </td>
@@ -197,7 +201,7 @@ export const InvoiceTable = (props: { invoices: any }) => {
 
               ShippingAddress: string;
             }) => (
-              <tr >
+              <tr>
                 <td className="p-1 text-sm text-neutral-500 px-2 border border-gray-300">
                   <p className="w-full">{saleOrder.InvoiceNumber}</p>
                 </td>
@@ -226,8 +230,19 @@ export const InvoiceTable = (props: { invoices: any }) => {
   );
 };
 export const ProductTable = (props: { products: any }) => {
+  const [products, setProducts] = useState([]);
+  useEffect(() => {
+    const getProducts = async () => {
+      const productDb = new PouchDb("products");
+      const products = productDb.allDocs({ include_docs: true });
+      const productData = (await products).rows.map((row) => row.doc);
+      setProducts(productData);
+      console.log(productData);
+    };
+    getProducts();
+  }, []);
   const navigate = useNavigate();
-  const { products } = props;
+  // const { products } = props;
   const [selectedOption, setSelectedOption] = useState("5");
   const [searchValue, setSearchValue] = useState("");
   const handleOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -289,79 +304,46 @@ export const ProductTable = (props: { products: any }) => {
           </td>
         </thead>
         <tbody>
-          {products.map(
-            (products: {
-              id: React.Key | null | undefined;
-              ProductCode:
-                | string
-                | number
-                | boolean
-                | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                | Iterable<React.ReactNode>
-                | React.ReactPortal
-                | null
-                | undefined;
-              ProductDescription:
-                | string
-                | number
-                | boolean
-                | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                | Iterable<React.ReactNode>
-                | React.ReactPortal
-                | null
-                | undefined;
-              HSNCODE:
-                | string
-                | number
-                | boolean
-                | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                | Iterable<React.ReactNode>
-                | React.ReactPortal
-                | null
-                | undefined;
-              TaxRate:
-                | string
-                | number
-                | boolean
-                | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                | Iterable<React.ReactNode>
-                | React.ReactPortal
-                | null
-                | undefined;
-            }) => (
-              <tr key={products.id}>
-                <td className="p-1 text-sm text-neutral-500 px-2 border border-gray-300">
-                  <p className="w-full">{products.ProductCode}</p>
-                </td>
-                <td className="p-1 uppercase text-sm text-neutral-500 px-2 border border-gray-300">
-                  <p className="w-full">{products.ProductDescription}</p>
-                </td>
-                <td className="p-1 text-sm text-neutral-500 px-2 border border-gray-300">
-                  <p className="w-full">{products.HSNCODE}</p>
-                </td>
-                <td className="p-1 text-sm text-neutral-500 px-2 border border-gray-300">
-                  <p className="w-full">{products.TaxRate}</p>
-                </td>
-                <td className="p-1 text-sm text-neutral-500 px-2 border border-gray-300  ">
-                  <button onClick={() => navigate("/home/products/:id") } className="bg-blue-500 text-sm p-1 text-white font-semibold rounded-sm">
-                    View
-                  </button>
-                </td>
-              </tr>
-            )
-          )}
+          {products
+            .sort((a, b) => {
+              const timeA = new Date(a.createdAt).getTime();
+              const timeB = new Date(b.createdAt).getTime();
+              return timeB - timeA;
+            })
+            .map(
+              (products: {
+                _id: React.Key;
+                productCode: number;
+                productDescription: string;
+
+                hsnCode: number;
+
+                taxRate: number;
+              }) => (
+                <tr key={products._id}>
+                  <td className="p-1 text-sm text-neutral-500 px-2 border border-gray-300">
+                    <p className="w-full">{products.productCode}</p>
+                  </td>
+                  <td className="p-1 uppercase text-sm text-neutral-500 px-2 border border-gray-300">
+                    <p className="w-full">{products.productDescription}</p>
+                  </td>
+                  <td className="p-1 text-sm text-neutral-500 px-2 border border-gray-300">
+                    <p className="w-full">{products.hsnCode}</p>
+                  </td>
+                  <td className="p-1 text-sm text-neutral-500 px-2 border border-gray-300">
+                    <p className="w-full">{products.taxRate}</p>
+                  </td>
+                  <td className="p-1 text-sm text-neutral-500 px-2 border border-gray-300  ">
+                    <button
+                      onClick={() => navigate(`/home/products/${products._id}`)}
+                      className="bg-blue-500 text-sm p-1 text-white font-semibold rounded-sm"
+                    >
+                      View
+                    </button>
+                  </td>
+                </tr>
+              )
+            )}
         </tbody>
       </table>
     </div>
@@ -517,7 +499,10 @@ export const PaymentTable = (props: { payment: any }) => {
                 </td>
                 <td className="   p-1 text-sm text-neutral-500 px-2 border border-gray-300  ">
                   <div className="flex flex-row items-center gap-2">
-                    <button onClick={() => navigate("/home/payment:id") } className="uppercase bg-blue-600 text-sm p-1 text-white font-semibold rounded-sm">
+                    <button
+                      onClick={() => navigate("/home/payment:id")}
+                      className="uppercase bg-blue-600 text-sm p-1 text-white font-semibold rounded-sm"
+                    >
                       View
                     </button>
                     <button className="uppercase  bg-blue-300 text-sm p-1 text-white font-semibold rounded-sm">
@@ -534,21 +519,19 @@ export const PaymentTable = (props: { payment: any }) => {
   );
 };
 
-
 export const ClientTable = (props: { client: any }) => {
-  const [clientData,setClientData] = useState([]);
+  const [clientData, setClientData] = useState([]);
   useEffect(() => {
     const getClients = async () => {
-    const clientDb = new PouchDb("clients");
-    const clients = clientDb.allDocs({include_docs:true});
-    const clientData = (await clients).rows.map(row => row.doc);
-    setClientData(clientData);
-    console.log(clientData);
+      const clientDb = new PouchDb("clients");
+      const clients = clientDb.allDocs({ include_docs: true });
+      const clientData = (await clients).rows.map((row) => row.doc);
+      setClientData(clientData);
+      console.log(clientData);
     };
     getClients();
-    
-  }, [])
-  
+  }, []);
+
   const navigate = useNavigate();
   const { client } = props;
   const [selectedOption, setSelectedOption] = useState("5");
@@ -613,60 +596,22 @@ export const ClientTable = (props: { client: any }) => {
         </thead>
         <tbody>
           {clientData.map(
-            (client: {
-              _id: React.Key | null | undefined;
-              CIID:
-                | string
-                | number
-                | boolean
-                | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                | Iterable<React.ReactNode>
-                | React.ReactPortal
-                | null
-                | undefined;
-                clientName:
-                | string
-                | number
-                | boolean
-                | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                | Iterable<React.ReactNode>
-                | React.ReactPortal
-                | null
-                | undefined;
-              city:
-                | string
-                | number
-                | boolean
-                | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                | Iterable<React.ReactNode>
-                | React.ReactPortal
-                | null
-                | undefined;
-              state:
-                | string
-                | number
-                | boolean
-                | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                | Iterable<React.ReactNode>
-                | React.ReactPortal
-                | null
-                | undefined;
-            }) => (
+            (
+              client: {
+                _id: React.Key;
+                CIID: number;
+
+                clientName: string;
+
+                city: string;
+
+                state: string;
+              },
+              idx
+            ) => (
               <tr key={client._id}>
                 <td className="p-1 text-sm text-neutral-500 px-2 border border-gray-300">
-                  <p className="w-full">{client.CIID}</p>
+                  <p className="w-full">{idx + 1}</p>
                 </td>
                 <td className="p-1 uppercase text-sm text-neutral-500 px-2 border border-gray-300">
                   <p className="w-full">{client.clientName}</p>
@@ -680,7 +625,10 @@ export const ClientTable = (props: { client: any }) => {
 
                 <td className="   p-1 text-sm text-neutral-500 px-2 border border-gray-300  ">
                   <div className="flex flex-row items-center gap-2">
-                    <button onClick={() =>navigate(`/home/clients/${client._id}`)} className="uppercase bg-blue-600 text-sm p-1 text-white font-semibold rounded-sm">
+                    <button
+                      onClick={() => navigate(`/home/clients/${client._id}`)}
+                      className="uppercase bg-blue-600 text-sm p-1 text-white font-semibold rounded-sm"
+                    >
                       View
                     </button>
                   </div>
@@ -1106,8 +1054,21 @@ export const MonthlyTable = (props: { monthly: any }) => {
   );
 };
 
-export const BillingAddress = (props: { billing: any }) => {
-  const { billing } = props;
+export const BillingAddress = () => {
+  const [billingData, setBillingData] = useState([]);
+  const navigate = useNavigate();
+  useEffect(() => {
+    const getBilling = async () => {
+      const billingDb = new PouchDb("billing");
+      const billing = billingDb.allDocs({ include_docs: true });
+      const billingData = (await billing).rows.map((row) => row.doc);
+      setBillingData(billingData);
+      console.log(billingData);
+    };
+
+    getBilling();
+  }, []);
+
   const [selectedOption, setSelectedOption] = useState("5");
   const [searchValue, setSearchValue] = useState("");
   const handleOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -1169,74 +1130,38 @@ export const BillingAddress = (props: { billing: any }) => {
           </td>
         </thead>
         <tbody>
-          {billing.map(
-            (bill: {
-              id: React.Key | null | undefined;
-              SlNO:
-                | string
-                | number
-                | boolean
-                | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                | Iterable<React.ReactNode>
-                | React.ReactPortal
-                | null
-                | undefined;
-              BillingCompanyName:
-                | string
-                | number
-                | boolean
-                | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                | Iterable<React.ReactNode>
-                | React.ReactPortal
-                | null
-                | undefined;
-              ClientName:
-                | string
-                | number
-                | boolean
-                | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                | Iterable<React.ReactNode>
-                | React.ReactPortal
-                | null
-                | undefined;
-              City:
-                | string
-                | number
-                | boolean
-                | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                | Iterable<React.ReactNode>
-                | React.ReactPortal
-                | null
-                | undefined;
-            }) => (
-              <tr key={bill.id}>
-                <td className="p-1 text-sm text-neutral-500 px-2 border border-gray-300">
-                  <p className="w-full">{bill.SlNO}</p>
-                </td>
+          {billingData.map(
+            (
+              bill: {
+                _id: React.Key;
+                SlNO: number;
+                billingCompany: string;
+                clientName: string;
+                city: string;
+              },
+              index
+            ) => (
+              <tr key={bill._id}>
                 <td className="p-1 uppercase text-sm text-neutral-500 px-2 border border-gray-300">
-                  <p className="w-full">{bill.BillingCompanyName}</p>
+                  <p className="w-full">{index + 1}</p>
                 </td>
                 <td className="p-1 text-sm text-neutral-500 px-2 border border-gray-300">
-                  <p className="w-full">{bill.ClientName}</p>
+                  <p className="w-full">{bill.billingCompany}</p>
                 </td>
                 <td className="p-1 text-sm text-neutral-500 px-2 border border-gray-300">
-                  <p className="w-full">{bill.City}</p>
+                  <p className="w-full">{bill.clientName}</p>
+                </td>
+                <td className="p-1 text-sm text-neutral-500 px-2 border border-gray-300">
+                  <p className="w-full">{bill.city}</p>
                 </td>
                 <td className="   p-1 text-sm text-neutral-500 px-2 border border-gray-300  ">
                   <div className="flex flex-row items-center gap-2">
-                    <button className="uppercase bg-blue-600 text-sm p-1 text-white font-semibold rounded-sm">
+                    <button
+                      onClick={() =>
+                        navigate(`/home/clients/billing/${bill._id}`)
+                      }
+                      className="uppercase bg-blue-600 text-sm p-1 text-white font-semibold rounded-sm"
+                    >
                       View
                     </button>
                   </div>
@@ -1250,9 +1175,20 @@ export const BillingAddress = (props: { billing: any }) => {
   );
 };
 
-export const ShippingAddress = (props: { shipping: any }) => {
+export const ShippingAddress = () => {
+  const [shippingData, setShippingData] = useState([]);
   const navigate = useNavigate();
-  const { shipping } = props;
+  useEffect(() => {
+    const getShipping = async () => {
+      const shippingDb = new PouchDb("shipping");
+      const shipping = shippingDb.allDocs({ include_docs: true });
+      const shippingData = (await shipping).rows.map((row) => row.doc);
+      setShippingData(shippingData);
+      console.log(shippingData);
+    };
+    getShipping();
+  }, []);
+
   const [selectedOption, setSelectedOption] = useState("5");
   const [searchValue, setSearchValue] = useState("");
   const handleOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -1297,91 +1233,56 @@ export const ShippingAddress = (props: { shipping: any }) => {
       </div>
       <table className="p-5 w-full border-collapse border border-gray-300">
         <thead>
-          <td className="text-sm px-2 border border-gray-300 font-semibold text-neutral-600">
+          <td className="text-md px-2 border border-gray-300 font-semibold text-neutral-600">
             <p className="w-full">Sl No.</p>
           </td>
-          <td className="text-sm px-2 border border-gray-300 font-semibold text-neutral-600">
+          <td className="text-md px-2 border border-gray-300 font-semibold text-neutral-600">
+            <p className="w-full">Shipping Company Name</p>
+          </td>
+          <td className="text-md px-2 border border-gray-300 font-semibold text-neutral-600">
             <p className="w-full">Billing Company Name</p>
           </td>
-          <td className="text-sm px-2 border border-gray-300 font-semibold text-neutral-600">
-            <p className="w-full">Client Name</p>
-          </td>
-          <td className="text-sm px-2 border border-gray-300 font-semibold text-neutral-600">
+          <td className="text-md px-2 border border-gray-300 font-semibold text-neutral-600">
             <p className="w-full">City</p>
           </td>
-          <td className="text-sm px-2 border border-gray-300 font-semibold text-neutral-600">
+          <td className="text-md px-2 border border-gray-300 font-semibold text-neutral-600">
             <p className="w-full">Actions</p>
           </td>
         </thead>
         <tbody>
-          {shipping.map(
-            (bill: {
-              id: React.Key | null | undefined;
-              slno:
-                | string
-                | number
-                | boolean
-                | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                | Iterable<React.ReactNode>
-                | React.ReactPortal
-                | null
-                | undefined;
-              ShippingCompanyName:
-                | string
-                | number
-                | boolean
-                | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                | Iterable<React.ReactNode>
-                | React.ReactPortal
-                | null
-                | undefined;
-              BillingCompanyName:
-                | string
-                | number
-                | boolean
-                | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                | Iterable<React.ReactNode>
-                | React.ReactPortal
-                | null
-                | undefined;
-              City:
-                | string
-                | number
-                | boolean
-                | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                | Iterable<React.ReactNode>
-                | React.ReactPortal
-                | null
-                | undefined;
-            }) => (
-              <tr key={bill.id}>
-                <td className="p-1 text-sm text-neutral-500 px-2 border border-gray-300">
-                  <p className="w-full">{bill.slno}</p>
+          {shippingData.map(
+            (
+              bill: {
+                _id: React.Key;
+                slno: number;
+
+                shippingCompanyName: string;
+
+                billingCompanyName: string;
+
+                shippingCity: string;
+              },
+              idx: number
+            ) => (
+              <tr key={bill._id}>
+                <td className="p-2 text-sm text-neutral-500 px-2 border border-gray-300">
+                  <p className="w-full">{idx + 1}</p>
                 </td>
-                <td className="p-1 uppercase text-sm text-neutral-500 px-2 border border-gray-300">
-                  <p className="w-full">{bill.ShippingCompanyName}</p>
+                <td className="p-2 uppercase text-sm text-neutral-500 px-2 border border-gray-300">
+                  <p className="w-full p-2">{bill.shippingCompanyName}</p>
                 </td>
-                <td className="p-1 text-sm text-neutral-500 px-2 border border-gray-300">
-                  <p className="w-full">{bill.BillingCompanyName}</p>
+                <td className="p-2 text-sm text-neutral-500 px-2 border border-gray-300">
+                  <p className="w-full">{bill.billingCompanyName}</p>
                 </td>
-                <td className="p-1 text-sm text-neutral-500 px-2 border border-gray-300">
-                  <p className="w-full">{bill.City}</p>
+                <td className="p-2 text-sm text-neutral-500 px-2 border border-gray-300">
+                  <p className="w-full">{bill.shippingCity}</p>
                 </td>
-                <td className="   p-1 text-sm text-neutral-500 px-2 border border-gray-300  ">
+                <td className="   p-2 text-sm text-neutral-500 px-2 border border-gray-300  ">
                   <div className="flex flex-row items-center gap-2">
-                    <button onClick={() => navigate("/home/shipping:id")} className="uppercase bg-blue-600 text-sm p-1 text-white font-semibold rounded-sm">
+                    <button
+                      onClick={() => navigate(`/home/shipping/${bill._id}`)}
+                      className="uppercase bg-blue-600 text-sm p-1 text-white font-semibold rounded-sm"
+                    >
                       View
                     </button>
                   </div>
@@ -1395,9 +1296,22 @@ export const ShippingAddress = (props: { shipping: any }) => {
   );
 };
 
-export const ClientPrice = (props: { clientPrice: any }) => { 
+export const ClientPrice = () => {
   const navigate = useNavigate();
-  const { clientPrice } = props;
+  const [clientPrice, setClientPrice] = useState([]);
+
+  useEffect(() => {
+    const getClientPrice = async () => {
+      const clientPriceDb = new PouchDb("clientPrice");
+      const clientPrice = clientPriceDb.allDocs({ include_docs: true });
+      const clientPriceData = (await clientPrice).rows.map((row) => row.doc);
+      setClientPrice(clientPriceData);
+     
+    };
+    getClientPrice();
+  }, []);
+
+
   const [selectedOption, setSelectedOption] = useState("5");
   const [searchValue, setSearchValue] = useState("");
   const handleOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -1456,67 +1370,30 @@ export const ClientPrice = (props: { clientPrice: any }) => {
           </td>
         </thead>
         <tbody>
-          {clientPrice.map(
-            (clientPrice: {
-              id: React.Key | null | undefined;
-              ClienName:
-                | string
-                | number
-                | boolean
-                | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                | Iterable<React.ReactNode>
-                | React.ReactPortal
-                | null
-                | undefined;
-              Product:
-                | string
-                | number
-                | boolean
-                | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                | Iterable<React.ReactNode>
-                | React.ReactPortal
-                | null
-                | undefined;
-              Proce:
-                | string
-                | number
-                | boolean
-                | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                | Iterable<React.ReactNode>
-                | React.ReactPortal
-                | null
-                | undefined;
-            }) => (
-              <tr key={clientPrice.id}>
-                <td className="p-1 text-sm text-neutral-500 px-2 border border-gray-300">
-                  <p className="w-full">{clientPrice.ClienName}</p>
-                </td>
-                <td className="p-1 uppercase text-sm text-neutral-500 px-2 border border-gray-300">
-                  <p className="w-full">{clientPrice.Product}</p>
-                </td>
-                <td className="p-1 text-sm text-neutral-500 px-2 border border-gray-300">
-                  <p className="w-full">{clientPrice.Proce}</p>
-                </td>
+          {clientPrice.map((clientPrice: any) => (
+            <tr key={clientPrice.id}>
+              <td className="p-1 text-sm text-neutral-500 px-2 border border-gray-300">
+                <p className="w-full">{clientPrice.selectedClient}</p>
+              </td>
+              <td className="p-1 uppercase text-sm text-neutral-500 px-2 border border-gray-300">
+                <p className="w-full">{clientPrice.selectedProduct}</p>
+              </td>
+              <td className="p-1 text-sm text-neutral-500 px-2 border border-gray-300">
+                <p className="w-full">{clientPrice.rate}</p>
+              </td>
 
-                <td className="   p-1 text-sm text-neutral-500 px-2 border border-gray-300  ">
-                  <div className="flex flex-row items-center gap-2">
-                    <button onClick={() => navigate("/home/clinetprice:id")}  className="uppercase bg-blue-600 text-sm p-1 text-white font-semibold rounded-sm">
-                      View
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            )
-          )}
+              <td className="   p-1 text-sm text-neutral-500 px-2 border border-gray-300  ">
+                <div className="flex flex-row items-center gap-2">
+                  <button
+                    onClick={() => navigate(`/home/clinetprice/${clientPrice._id}`)}
+                    className="uppercase bg-blue-600 text-sm p-1 text-white font-semibold rounded-sm"
+                  >
+                    View
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>

@@ -3,7 +3,7 @@ import "react-tabs/style/react-tabs.css";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BillingAddress, ClientPrice, ClientTable, ShippingAddress } from "../components/table";
-import { Billing, ClientPriceData, Shipping, clients } from "../utils/data";
+import { Billing, clients } from "../utils/data";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { Box, Typography } from "@mui/material";
@@ -97,7 +97,7 @@ const Clients = () => {
                 Add Billing Address
               </button>
             </div>
-            <BillingAddress billing={Billing} />          </div>
+            <BillingAddress/>          </div>
         </div>
       </CustomTabPanel>
       <CustomTabPanel value={value} index={2}>
@@ -114,7 +114,7 @@ const Clients = () => {
                 Add Shipping Address
               </button>
             </div>
-            <ShippingAddress shipping={Shipping} />         </div>
+            <ShippingAddress  />         </div>
         </div>
       </CustomTabPanel>
       <CustomTabPanel value={value} index={3}>
@@ -131,7 +131,7 @@ const Clients = () => {
                 Add CLient Price List
               </button>
             </div>
-            <ClientPrice clientPrice={ClientPriceData} />        </div>
+            <ClientPrice  />        </div>
         </div>
       </CustomTabPanel>
     </div>

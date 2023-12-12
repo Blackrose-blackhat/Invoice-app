@@ -9,16 +9,9 @@ import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 
  const Products = () => {
   const navigate = useNavigate();
-  const [selectedOption, setSelectedOption] = useState("5");
-  const [searchValue, setSearchValue] = useState("");
+ 
 
-  const handleOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedOption(event.target.value);
-  };
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchValue(event.target.value);
-  };
   const handleAdd = () => {
     navigate("/home/product/new");
   };
@@ -29,9 +22,8 @@ import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
         <div className="bg-blue-500 rounded-full w-10 h-10" />
       </div>
       <div onClick={handleAdd} className="px-10 flex flex-row w-full justify-end">
-        <button className="bg-neutral-800 gap-2 flex flex-row items-center text-white p-2 font-semibold rounded-md">
-        <FontAwesomeIcon  icon={faUserPlus} style={{color: "#ffffff",}} />
-            Users
+        <button className="bg-neutral-800  gap-2 flex flex-row items-center text-white p-2 font-semibold rounded-md">
+            Add New
             </button>
       </div>
       <div className="px-10 py-20 flex flex-col ">

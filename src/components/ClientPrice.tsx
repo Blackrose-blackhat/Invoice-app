@@ -1,20 +1,39 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { deleteClientPriceById, getClientPriceById } from "../utils/Actions";
+import toast from "react-hot-toast";
 
 const ClientPriceDetails: React.FC = () => {
   const navigate = useNavigate();
-  // const [invoice, setInvoice] = useState<{ invoice_id: number; InvoiceNumber: string; InvoideDate: string; ShippingAddress: string; Destination: string; } | null>(null);
+  //Product -> productdescription 
+  //Client-> clientName
+  const [clientPriceDetail,setClientPriceDetail] = useState([]);
+  const {id} = useParams();
 
-  // const { invoiceId } = useParams();
-  // // useEffect(() => {
-  // //   const result = getInvoiceById(Number(invoiceId));
-  // //   if (result === "Invoice not found") {
-  // //     setInvoice(null);
-  // //   } else {
-  // //     setInvoice(result);
-  // //   }
 
-  // // }, [invoiceId]);
+  useEffect(()=> {
+    getClientPriceDetails();
+  },[])
+
+  const getClientPriceDetails=async() => {
+    const res = await getClientPriceById(id);
+    
+    setClientPriceDetail([res]);
+    console.log(clientPriceDetail)
+   
+    
+  }
+
+  const handleDelete = async(id:string)=> {
+    const res = await deleteClientPriceById(id);
+     
+    console.log(res);
+    navigate("/home/products");
+    
+    toast.success("Product Deleted");
+  }
+
+
 
   return (
     <div className="flex flex-col justify-center  w-full  gap-10 px-5 py-5 ">
@@ -34,11 +53,11 @@ const ClientPriceDetails: React.FC = () => {
           >
             Back
           </button>
-          <button className="bg-green-500 rounded-md px-5 py-2 text-sm text-slate-200 font-semibold">
+          <button onClick={()=> navigate(`/home/clients/price/new/${id}`)} className="bg-green-500 rounded-md px-5 py-2 text-sm text-slate-200 font-semibold">
             Edit
           </button>
           
-          <button className="bg-red-500 rounded-md px-5 py-2 text-sm text-slate-200 font-semibold">
+          <button onClick={()=> handleDelete(id)} className="bg-red-500 rounded-md px-5 py-2 text-sm text-slate-200 font-semibold">
             Delete
           </button>
         </div>
@@ -46,20 +65,20 @@ const ClientPriceDetails: React.FC = () => {
       <div className="flex flex-col shadow-sm shadow-neutral-700 w-full p-2 rounded-md">
         <div className="flex flex-row w-full  p-2 rounded-md">
           <table className="w-full border">
-            <tbody>
-              <tr className="text-sm text-neutral-600  border px-4 py-2">
-                <td className="flex-1 font-semibold">Sl No.:</td>
-                <td className="flex-1 ">1003</td>
-               
-              </tr>
+            {clientPriceDetail.map((clientPrice:any)=>(
+              <tbody key={clientPrice._id}>
+              
               <tr className="text-sm text-neutral-600  border px-4 py-2">
                 <td className="flex-1 font-semibold ">Client Name</td>
-                <td className="flex-1 upperacse">5-POINT profile tools</td>
+                <td className="flex-1 upperacse">{clientPrice.selectedClient}</td>
                 
               </tr>
+              {}
               <tr className="text-sm text-neutral-600  border px-4 py-2">
                 <td className="flex-1 font-semibold">Product Info</td>
-                <td className="flex-1">-d1a-1-150-10 </td>
+                <td className="flex-1">{} </td>
+                {/* //TODO product INFO */}
+               
                
               </tr>
               <tr className="text-sm text-neutral-600  border px-4 py-2">
@@ -69,12 +88,14 @@ const ClientPriceDetails: React.FC = () => {
               </tr>
               <tr className="text-sm text-neutral-600  border px-4 py-2">
                 <td className="flex-1 font-semibold">Rate</td>
-                <td className="flex-1">Rs. 2200.00</td>
+                <td className="flex-1">{clientPrice.rate}</td>
                
               </tr>
             
               
             </tbody>
+            ))}
+            
           </table>
         </div>
 

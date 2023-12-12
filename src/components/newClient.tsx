@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import "../components/init";
 import PouchDB from "pouchdb-browser";
 import toast from "react-hot-toast";
-import { getClientById, getInvoiceById } from "../utils/Actions";
+import { generateRandom3DigitNumber, getClientById, getInvoiceById } from "../utils/Actions";
 
 const NewClient = ({ invoiceID }: any) => {
   
@@ -13,11 +13,11 @@ const NewClient = ({ invoiceID }: any) => {
   const { id } = useParams();
 
   const navigate = useNavigate();
-
+  const rand = generateRandom3DigitNumber();
 
   const [formData, setFormData] = useState({
     _id: id ? id : uuidv4(),
-    clientID: "",
+    
     clientName: "",
     city: "",
     company: "",
@@ -28,6 +28,7 @@ const NewClient = ({ invoiceID }: any) => {
     zipCode: "",
     faxArea: "",
     mailAddress: "",
+    clientId : rand,
   });
   useEffect(() => {
     const getClient = async () => {
@@ -43,7 +44,7 @@ const NewClient = ({ invoiceID }: any) => {
       }
     };
     getClient();
-  }, [invoiceID]);
+  }, [id]);
   const handleChange = (e: any) => {
     const { name, value } = e.target;
     setFormData({
@@ -111,6 +112,7 @@ const NewClient = ({ invoiceID }: any) => {
                   Client Name
                 </p>
                 <input
+                required
                   name="clientName"
                   value={formData.clientName}
                   onChange={handleChange}
@@ -120,6 +122,7 @@ const NewClient = ({ invoiceID }: any) => {
               <div className="flex flex-col ">
                 <p className="text-md font-semibold text-neutral-700">City</p>
                 <input
+                required
                   name="city"
                   value={formData.city}
                   onChange={handleChange}
@@ -131,6 +134,7 @@ const NewClient = ({ invoiceID }: any) => {
                   Company
                 </p>
                 <input
+                required
                   name="company"
                   value={formData.company}
                   onChange={handleChange}
@@ -142,6 +146,7 @@ const NewClient = ({ invoiceID }: any) => {
                   Phone Number
                 </p>
                 <input
+                required
                   name="phoneNumber"
                   value={formData.phoneNumber}
                   onChange={handleChange}
@@ -153,6 +158,7 @@ const NewClient = ({ invoiceID }: any) => {
                   Website
                 </p>
                 <input
+                required
                   name="website"
                   value={formData.website}
                   onChange={handleChange}
@@ -166,6 +172,7 @@ const NewClient = ({ invoiceID }: any) => {
                   Address
                 </p>
                 <textarea
+                required
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
@@ -175,6 +182,7 @@ const NewClient = ({ invoiceID }: any) => {
               <div className="flex flex-col  ">
                 <p className="text-md font-semibold text-neutral-700">State</p>
                 <input
+                required
                   name="state"
                   value={formData.state}
                   onChange={handleChange}
@@ -186,6 +194,7 @@ const NewClient = ({ invoiceID }: any) => {
                   Zip Code
                 </p>
                 <input
+                required
                   name="zipCode"
                   value={formData.zipCode}
                   onChange={handleChange}
@@ -197,6 +206,7 @@ const NewClient = ({ invoiceID }: any) => {
                   Fax Area
                 </p>
                 <input
+                required
                   name="faxArea"
                   value={formData.faxArea}
                   onChange={handleChange}
@@ -208,6 +218,7 @@ const NewClient = ({ invoiceID }: any) => {
                   Mail Address
                 </p>
                 <input
+                required
                   name="mailAddress"
                   value={formData.mailAddress}
                   onChange={handleChange}

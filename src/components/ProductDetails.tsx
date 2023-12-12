@@ -1,20 +1,33 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-
+import { Router, useNavigate, useParams } from "react-router-dom";
+import {  deleteProductById, getProductById } from "../../src/utils/Actions";
+import toast from "react-hot-toast";
 const ProductDetails: React.FC = () => {
-  let navigate = useNavigate();
-  // const [invoice, setInvoice] = useState<{ invoice_id: number; InvoiceNumber: string; InvoideDate: string; ShippingAddress: string; Destination: string; } | null>(null);
+  const navigate = useNavigate();
+  const [productDetails,setProductDetails] = useState([]);
+  const {id} = useParams();
 
-  // const { invoiceId } = useParams();
-  // // useEffect(() => {
-  // //   const result = getInvoiceById(Number(invoiceId));
-  // //   if (result === "Invoice not found") {
-  // //     setInvoice(null);
-  // //   } else {
-  // //     setInvoice(result);
-  // //   }
 
-  // // }, [invoiceId]);
+  useEffect(()=>{
+    
+    getProductDetails();
+},[])
+const getProductDetails=()=>{
+  const res =getProductById(id);
+  res.then((results)=> {
+    setProductDetails([results]);
+ 
+  }) 
+}
+const handleDelete = async(id:string)=> {
+  const res = await deleteProductById(id);
+   getProductDetails();
+  console.log(res);
+  navigate("/home/products");
+  
+  toast.success("Product Deleted");
+
+}
 
   return (
     <div className="flex flex-col justify-center  w-full  gap-10 px-5 py-5 ">
@@ -34,11 +47,11 @@ const ProductDetails: React.FC = () => {
           >
             Back
           </button>
-          <button className="bg-green-500 rounded-md px-5 py-2 text-sm text-slate-200 font-semibold">
+          <button onClick={()=> navigate(`/home/product/new/${id}`)} className="bg-green-500 rounded-md px-5 py-2 text-sm text-slate-200 font-semibold">
             Edit
           </button>
           
-          <button className="bg-red-500 rounded-md px-5 py-2 text-sm text-slate-200 font-semibold">
+          <button onClick={()=> handleDelete(id)} className="bg-red-500 rounded-md px-5 py-2 text-sm text-slate-200 font-semibold">
             Delete
           </button>
         </div>
@@ -46,33 +59,36 @@ const ProductDetails: React.FC = () => {
       <div className="flex flex-col shadow-sm shadow-neutral-700 w-full p-2 rounded-md">
         <div className="flex flex-row w-full  p-2 rounded-md">
           <table className="w-full border">
-            <tbody>
-              <tr className="text-sm text-neutral-600  border px-4 py-2 h-10">
-                <td className="flex-1 font-semibold">Product Id</td>
-                <td className="flex-1 ">341</td>
-                <td className="flex-1 font-semibold">Product Number</td>
-                <td className="flex-1"></td>
-              </tr>
-              <tr className="text-sm text-neutral-600  border px-4 py-2 h-10">
-                <td className="flex-1 font-semibold ">Product Code</td>
-                <td className="flex-1">100-10-091</td>
-                <td className="flex-1 font-semibold">Unit</td>
-                <td className="flex-1">3</td>
-              </tr>
-              <tr className="text-sm text-neutral-600  border px-4 py-2 h-10">
-                <td className="flex-1 font-semibold">Tax Rate</td>
-                <td className="flex-1">18</td>
-                <td className="flex-1 font-semibold">Product Rate</td>
-                <td className="flex-1">1500.00</td>
-              </tr>
-              <tr className="text-sm text-neutral-600  border px-4 py-2 h-10">
-                <td className="flex-1 font-semibold">Product Description</td>
-                <td className="flex-1">100X10X5,D91 , C100 Diamond Flat Wheel</td>
-                <td className="flex-1 font-semibold">HSN Code</td>
-                <td className="flex-1">68042210</td>
-              </tr>
-              
-            </tbody>
+            {productDetails.map((product:any , idx)=>(
+                <tbody key={product._id}>
+                <tr className="text-sm text-neutral-600  border px-4 py-2 h-10">
+                  <td className="flex-1 font-semibold">Product Id</td>
+                  <td className="flex-1 ">{idx+1}</td>
+                  <td className="flex-1 font-semibold">Product Number</td>
+                  <td className="flex-1">{product.productNumber}</td>
+                </tr>
+                <tr className="text-sm text-neutral-600  border px-4 py-2 h-10">
+                  <td className="flex-1 font-semibold ">Product Code</td>
+                  <td className="flex-1">{product.productCode}</td>
+                  <td className="flex-1 font-semibold">Unit</td>
+                  <td className="flex-1">{product.unit}</td>
+                </tr>
+                <tr className="text-sm text-neutral-600  border px-4 py-2 h-10">
+                  <td className="flex-1 font-semibold">Tax Rate</td>
+                  <td className="flex-1">{product.taxRate}</td>
+                  <td className="flex-1 font-semibold">Product Rate</td>
+                  <td className="flex-1">{product.productRate}</td>
+                </tr>
+                <tr className="text-sm text-neutral-600  border px-4 py-2 h-10">
+                  <td className="flex-1 font-semibold">Product Description</td>
+                  <td className="flex-1">{product.productDescription}</td>
+                  <td className="flex-1 font-semibold">HSN Code</td>
+                  <td className="flex-1">{product.hsnCode}</td>
+                </tr>
+                
+              </tbody>
+            ))}
+            
           </table>
         </div>
 

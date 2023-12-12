@@ -28,6 +28,7 @@ import Sales from "./screens/sales";
 import "./components/init"
 import Check from "./components/check";
 import { Toaster } from "react-hot-toast";
+import BillingDetails from "./components/BillingDetails";
 const root = createRoot(document.body);
 
 // const navigate = useNavigate();
@@ -48,17 +49,23 @@ root.render(
           <Route path='/home/sales/new' element={<NewSales />} />
           <Route path='/home/products' element={<Products />} />
           <Route path='/home/product/new' element={<NewProd />} />
+          <Route path='/home/product/new/:id' element={<NewProd />} />
+
           <Route path='/home/payment/new' element={<NewVoucher />} />
           <Route path='/home/clients/new' element={<NewClient />} />
           <Route path='/home/clients/new/:id' element={<NewClient />} />
+          <Route path='/home/clients/billing/:id' element={<BillingDetails />} />
 
           <Route path='/home/clients/billing/new' element={<NewBilling />} />
-          <Route path='/home/clients/price/new' element={<NewClientPrice />} />
+          <Route path='/home/clients/billing/new/:id' element={<NewBilling />} />
           
           <Route path='/home/clients/shipping/new' element={<NewShipping />} />
+          <Route path='/home/clients/shipping/new/:id' element={<NewShipping />} />
 
-          <Route path='/home/shipping:id' element={<ShippingDetails />} />
-          <Route path='/home/clinetprice:id' element={<ClientPriceDetails />} />
+          <Route path='/home/shipping/:id' element={<ShippingDetails />} />
+          <Route path='/home/clinetprice/:id' element={<ClientPriceDetails />} />
+          <Route path='/home/clients/price/new' element={<NewClientPrice />} />
+          <Route path='/home/clients/price/new/:id' element={<NewClientPrice />} />
 
 
 

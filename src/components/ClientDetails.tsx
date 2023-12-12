@@ -62,11 +62,11 @@ const ClientDetails = () => {
         <div className="flex flex-row w-full  p-2 rounded-md">
           <table className="w-full border">
             {clientDetails.map((client) => (
-              <tbody>
+              <tbody key={client._id}>
               
               <tr className="text-sm text-neutral-600  border px-4 py-2">
                 <td className="flex-1 font-semibold">Client ID</td>
-                <td className="flex-1 ">{}</td>
+                <td className="flex-1 ">{client.clientId}</td>
                 <td className="flex-1 font-semibold">Client Name</td>
                 <td className="flex-1 uppercase">{client.clientName}</td>
               </tr>
@@ -89,7 +89,7 @@ const ClientDetails = () => {
                 <td className="flex-1">{client.phoneNumber}</td>
               </tr>
               <tr className="text-sm text-neutral-600  border px-4 py-2">
-                <td className="flex-1 font-semibold">Currenvy</td>
+                <td className="flex-1 font-semibold">Currency</td>
                 <td className="flex-1">INR</td>
                 <td className="flex-1 font-semibold">Email</td>
                 <td className="flex-1">{client.mailAddress}</td>

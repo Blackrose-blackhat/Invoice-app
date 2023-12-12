@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 const NewSales = () => {
-    let navigate = useNavigate();
+    const navigate = useNavigate();
     return (
         <div className="w-full h-screen flex flex-col gap-14">
             <div className="flex flex-row justify-between py-10 px-11 ">

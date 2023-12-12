@@ -1,20 +1,33 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { deleteShippingById, generateRandom3DigitNumber, getShippingById } from "../utils/Actions";
+import toast from "react-hot-toast";
+// import { getShippingById } from "../utils/Actions";
 
 const ShippingDetails: React.FC = () => {
-  let navigate = useNavigate();
-  // const [invoice, setInvoice] = useState<{ invoice_id: number; InvoiceNumber: string; InvoideDate: string; ShippingAddress: string; Destination: string; } | null>(null);
+  const  navigate = useNavigate();
+  const [shippingDetails,setShippingDetails] = useState([]);
+  const {id} = useParams();
+  console.log(id);
+  
+  const getShippingDetails=()=> {
+    const res = getShippingById(id);
+    res.then((result)=>{
+      setShippingDetails([result]);
+      console.log(result)
+    })
+  }
+  useEffect(()=> {
+    getShippingDetails();
+  },[id])
+  const rand = generateRandom3DigitNumber();
 
-  // const { invoiceId } = useParams();
-  // // useEffect(() => {
-  // //   const result = getInvoiceById(Number(invoiceId));
-  // //   if (result === "Invoice not found") {
-  // //     setInvoice(null);
-  // //   } else {
-  // //     setInvoice(result);
-  // //   }
-
-  // // }, [invoiceId]);
+  const handleDelete =  (id:string)=> {
+    const res =  deleteShippingById(id);
+    console.log(res);
+    navigate("/home/clients");
+    toast.success("Shipping detail deleted successfully");
+  }
 
   return (
     <div className="flex flex-col justify-center  w-full  gap-10 px-5 py-5 ">
@@ -34,11 +47,11 @@ const ShippingDetails: React.FC = () => {
           >
             Back
           </button>
-          <button className="bg-green-500 rounded-md px-5 py-2 text-sm text-slate-200 font-semibold">
+          <button onClick={()=> navigate(`/home/clients/shipping/new/${id}`)} className="bg-green-500 rounded-md px-5 py-2 text-sm text-slate-200 font-semibold">
             Edit
           </button>
           
-          <button className="bg-red-500 rounded-md px-5 py-2 text-sm text-slate-200 font-semibold">
+          <button onClick={()=>handleDelete(id)} className="bg-red-500 rounded-md px-5 py-2 text-sm text-slate-200 font-semibold">
             Delete
           </button>
         </div>
@@ -46,45 +59,48 @@ const ShippingDetails: React.FC = () => {
       <div className="flex flex-col shadow-sm shadow-neutral-700 w-full p-2 rounded-md">
         <div className="flex flex-row w-full  p-2 rounded-md">
           <table className="w-full border">
-            <tbody>
-              <tr className="text-sm text-neutral-600  border px-4 py-2">
-                <td className="flex-1 font-semibold">Shiiping Address id</td>
-                <td className="flex-1 ">191</td>
+            {shippingDetails.map((product:any) => (
+              <tbody key={product._id}>
+              <tr className="text-lg text-neutral-600  border p-7">
+                <td className="flex-1 font-semibold p-2">Shipping Address id</td>
+                <td className="flex-1 ">{rand}</td>
                 <td className="flex-1 font-semibold">Shipping Company</td>
-                <td className="flex-1  uppercase">OM TOOLS</td>
+                <td className="flex-1  uppercase">{product.shippingCompanyName}</td>
               </tr>
-              <tr className="text-sm text-neutral-600  border px-4 py-2">
-                <td className="flex-1 font-semibold ">Billing Company Name</td>
-                <td className="flex-1 upperacse">OM TOOLS</td>
+              <tr className="text-lg text-neutral-600  border px-4 py-2">
+                <td className="flex-1 font-semibold p-2">Billing Company Name</td>
+                <td className="flex-1 upperacse">{product.billingCompanyName}</td>
                 <td className="flex-1 font-semibold">Address 1</td>
-                <td className="flex-1">PAP j-38 , Indaryani Chowk , MIDC,Bhosari</td>
+                <td className="flex-1">{product.billingArea}</td>
               </tr>
-              <tr className="text-sm text-neutral-600  border px-4 py-2">
-                <td className="flex-1 font-semibold">Address 2</td>
-                <td className="flex-1"> </td>
+              <tr className="text-lg text-neutral-600  border px-4 py-2">
+                <td className="flex-1 font-semibold p-2">Address 2</td>
+                <td className="flex-1">{product.shippingAddress2} </td>
                 <td className="flex-1 font-semibold">Area</td>
-                <td className="flex-1">India</td>
+                <td className="flex-1">{product.billingArea}</td>
               </tr>
-              <tr className="text-sm text-neutral-600  border px-4 py-2">
-                <td className="flex-1 font-semibold">City</td>
-                <td className="flex-1">Pune</td>
+              <tr className="text-lg text-neutral-600  border px-4 py-2">
+                <td className="flex-1 font-semibold p-2">City</td>
+                <td className="flex-1">{product.shippingCity}</td>
                 <td className="flex-1 font-semibold">State</td>
-                <td className="flex-1">Maharashtra</td>
+                <td className="flex-1">{product.billingState}</td>
               </tr>
-              <tr className="text-sm text-neutral-600  border px-4 py-2">
-                <td className="flex-1 font-semibold">Country</td>
-                <td className="flex-1">India</td>
+              <tr className="text-lg text-neutral-600  border px-4 py-2">
+                <td className="flex-1 font-semibold p-2">Country</td>
+                <td className="flex-1">{product.shippingCountry}</td>
                 <td className="flex-1 font-semibold">Zip Code</td>
-                <td className="flex-1">411026</td>
+                <td className="flex-1">{product.billingZipCode}</td>
               </tr>
-              <tr className="text-sm text-neutral-600  border px-4 py-2">
-                <td className="flex-1 font-semibold">Phone</td>
-                <td className="flex-1">9890652823</td>
+              <tr className="text-lg text-neutral-600  border px-4 py-2">
+                <td className="flex-1 font-semibold p-2">Phone</td>
+                <td className="flex-1">{product.shippingPhoneNumber}</td>
                 <td className="flex-1 font-semibold">Contact Person</td>
-                <td className="flex-1"></td>
+                <td className="flex-1">{product.billingContactPerson}</td>
               </tr>
               
             </tbody>
+            ))}
+            
           </table>
         </div>
 
