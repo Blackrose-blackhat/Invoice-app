@@ -8,13 +8,18 @@ import { VitePlugin } from "@electron-forge/plugin-vite";
 
 
 const config: ForgeConfig = {
-  packagerConfig: {},
+  packagerConfig: {
+    // set config executableName
+      executableName: "Invoice-app",
+  },
   rebuildConfig: {},
   makers: [
+    
     new MakerSquirrel({}),
     new MakerZIP({}, ["darwin"]),
-    new MakerRpm({}),
+
     new MakerDeb({}),
+    
    
   ],
   plugins: [
