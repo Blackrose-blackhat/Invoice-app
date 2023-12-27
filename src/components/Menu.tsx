@@ -1,13 +1,15 @@
 import React from 'react';
 import { Avatar, IconButton, ListItemIcon, Menu, MenuItem, Tooltip } from '@mui/material';
 import { Logout } from '@mui/icons-material';
+import { useNavigate } from 'react-router';
+import toast from 'react-hot-toast';
 
 interface AccountMenuProps {
   logo: string;
-  onLogout: () => void;
 }
 
-const AccountMenu: React.FC<AccountMenuProps> = ({ logo, onLogout }) => {
+const AccountMenu: React.FC<AccountMenuProps> = ({ logo }) => {
+    const navigate = useNavigate()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -19,9 +21,13 @@ const AccountMenu: React.FC<AccountMenuProps> = ({ logo, onLogout }) => {
     setAnchorEl(null);
   };
 
+  const onLogout=()=> {
+    navigate("/");
+    toast.success("Logout successful!");
+  }
   return (
     <>
-      <Tooltip title="Account settings">
+      <Tooltip title="Account Menu">
         <IconButton
           onClick={handleClick}
           size="small"
