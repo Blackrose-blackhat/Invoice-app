@@ -15,6 +15,7 @@ const AccountMenu: React.FC<AccountMenuProps> = ({ logo }) => {
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
+    
   };
 
   const handleClose = () => {
@@ -47,7 +48,7 @@ const AccountMenu: React.FC<AccountMenuProps> = ({ logo }) => {
         onClick={handleClose}
         // ...rest of the props
       >
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={onLogout}>
           <ListItemIcon onClick={onLogout}>
             <Logout fontSize="small" />
           </ListItemIcon>

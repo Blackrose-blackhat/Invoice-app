@@ -10,7 +10,7 @@ import { VitePlugin } from "@electron-forge/plugin-vite";
 const config: ForgeConfig = {
   packagerConfig: {
     // set config executableName
-      executableName: "Invoice-app",
+      executableName: "invoice-app",
   },
   rebuildConfig: {},
   makers: [

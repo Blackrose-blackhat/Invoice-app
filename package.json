@@ -1,8 +1,8 @@
 {
   "name": "invoice-app",
-  "productName": "Invoice-app",
+  "productName": "invoice-app",
   "version": "1.0.0",
-  "description": "An offline invoice app",
+  "description": "My Electron application description",
   "main": ".vite/build/main.js",
   "scripts": {
     "start": "electron-forge start",
